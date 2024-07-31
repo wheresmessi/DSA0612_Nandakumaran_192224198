@@ -1,0 +1,27 @@
+library(plotly)
+library(dplyr)
+dates <- c('2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05')
+stock_price <- c(100, 102, 98, 105, 108)
+volume_traded <- c(2.5, 3.0, 2.2, 2.8, 3.5)
+market_cap <- c(500, 510, 490, 525, 540)
+financial_data <- data.frame(dates, stock_price, volume_traded, market_cap)
+scatter_plot <- plot_ly(financial_data, x = ~volume_traded, y = ~market_cap, z = ~stock_price, 
+                        type = 'scatter3d', mode = 'markers',
+                        marker = list(size = 5, color = ~stock_price, colorscale = 'Viridis'))
+scatter_plot <- scatter_plot %>% layout(scene = list(xaxis = list(title = 'Volume Traded (millions)'),
+                                                     yaxis = list(title = 'Market Cap ($)'),
+                                                     zaxis = list(title = 'Stock Price ($)'),
+                                                     title = '3D Scatter: Stock Price vs Volume Traded and Market Cap'))
+stock_price_range <- seq(min(stock_price), max(stock_price), length.out = 50)
+volume_traded_range <- seq(min(volume_traded), max(volume_traded), length.out = 50)
+stock_price_mesh <- as.vector(outer(stock_price_range, rep(1, length(volume_traded_range))))
+volume_traded_mesh <- as.vector(outer(rep(1, length(stock_price_range)), volume_traded_range))
+market_cap_mesh <- 5 * stock_price_mesh + 10 * volume_traded_mesh
+surface_plot <- plot_ly(x = stock_price_range, y = volume_traded_range, z = matrix(market_cap_mesh, nrow = 50, ncol = 50), 
+                        type = 'surface')
+surface_plot <- surface_plot %>% layout(scene = list(xaxis = list(title = 'Stock Price ($)'),
+                                                     yaxis = list(title = 'Volume Traded (millions)'),
+                                                     zaxis = list(title = 'Market Cap ($)'),
+                                                     title = '3D Surface: Market Cap with Stock Price and Volume Traded'))
+scatter_plot
+surface_plot

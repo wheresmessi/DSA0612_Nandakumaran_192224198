@@ -1,0 +1,27 @@
+library(plotly)
+library(dplyr)
+location <- c('A', 'B', 'C', 'D', 'E')
+temperature <- c(15, 20, 18, 12, 17)
+humidity <- c(65, 70, 68, 60, 72)
+co2_levels <- c(400, 450, 420, 380, 430)
+environmental_data <- data.frame(location, temperature, humidity, co2_levels)
+scatter_plot <- plot_ly(environmental_data, x = ~temperature, y = ~humidity, z = ~co2_levels, 
+                        type = 'scatter3d', mode = 'markers',
+                        marker = list(size = 5, color = ~co2_levels, colorscale = 'Viridis'))
+scatter_plot <- scatter_plot %>% layout(scene = list(xaxis = list(title = 'Temperature (°C)'),
+                                                     yaxis = list(title = 'Humidity (%)'),
+                                                     zaxis = list(title = 'CO2 Levels (ppm)'),
+                                                     title = '3D Scatter: CO2 Levels vs Temperature and Humidity'))
+temperature_range <- seq(min(temperature), max(temperature), length.out = 50)
+humidity_range <- seq(min(humidity), max(humidity), length.out = 50)
+temperature_mesh <- as.vector(outer(temperature_range, rep(1, length(humidity_range))))
+humidity_mesh <- as.vector(outer(rep(1, length(temperature_range)), humidity_range))
+co2_levels_mesh <- 400 + 2 * temperature_mesh + 0.5 * humidity_mesh
+surface_plot <- plot_ly(x = temperature_range, y = humidity_range, z = matrix(co2_levels_mesh, nrow = 50, ncol = 50), 
+                        type = 'surface')
+surface_plot <- surface_plot %>% layout(scene = list(xaxis = list(title = 'Temperature (°C)'),
+                                                     yaxis = list(title = 'Humidity (%)'),
+                                                     zaxis = list(title = 'CO2 Levels (ppm)'),
+                                                     title = '3D Surface: CO2 Levels with Temperature and Humidity'))
+scatter_plot
+surface_plot

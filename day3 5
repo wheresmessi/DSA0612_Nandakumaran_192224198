@@ -1,0 +1,28 @@
+library(plotly)
+library(dplyr)
+dates <- c('2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05')
+temperature <- c(10, 12, 8, 15, 14)
+humidity <- c(75, 70, 80, 65, 72)
+wind_speed <- c(15, 12, 18, 20, 16)
+weather_data <- data.frame(dates, temperature, humidity, wind_speed)
+scatter_plot <- plot_ly(weather_data, x = ~humidity, y = ~wind_speed, z = ~temperature, 
+                        type = 'scatter3d', mode = 'markers',
+                        marker = list(size = 5, color = ~temperature, colorscale = 'Viridis'))
+scatter_plot <- scatter_plot %>% layout(scene = list(xaxis = list(title = 'Humidity (%)'),
+                                                     yaxis = list(title = 'Wind Speed (km/h)'),
+                                                     zaxis = list(title = 'Temperature (°C)'),
+                                                     title = '3D Scatter: Temperature vs Humidity and Wind Speed'))
+humidity_range <- seq(min(humidity), max(humidity), length.out = 50)
+wind_speed_range <- seq(min(wind_speed), max(wind_speed), length.out = 50)
+humidity_mesh <- as.vector(outer(humidity_range, rep(1, length(wind_speed_range))))
+wind_speed_mesh <- as.vector(outer(rep(1, length(humidity_range)), wind_speed_range))
+temperature_mesh <- 0.5 * humidity_mesh - 0.2 * wind_speed_mesh
+surface_plot <- plot_ly(x = humidity_range, y = wind_speed_range, z = matrix(temperature_mesh, nrow = 50, ncol = 50), 
+                        type = 'surface')
+surface_plot <- surface_plot %>% layout(scene = list(xaxis = list(title = 'Humidity (%)'),
+                                                     yaxis = list(title = 'Wind Speed (km/h)'),
+                                                     zaxis = list(title = 'Temperature (°C)'),
+                                                     title = '3D Surface: Temperature with Humidity and Wind Speed'))
+
+scatter_plot
+surface_plot

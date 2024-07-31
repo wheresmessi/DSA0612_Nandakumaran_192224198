@@ -1,0 +1,27 @@
+library(plotly)
+library(dplyr)
+students <- c('A', 'B', 'C', 'D', 'E')
+math_score <- c(85, 72, 90, 78, 88)
+science_score <- c(78, 85, 80, 75, 82)
+attendance <- c(95, 92, 98, 85, 93)
+academic_data <- data.frame(students, math_score, science_score, attendance)
+scatter_plot <- plot_ly(academic_data, x = ~math_score, y = ~attendance, z = ~science_score, 
+                        type = 'scatter3d', mode = 'markers',
+                        marker = list(size = 5, color = ~science_score, colorscale = 'Viridis'))
+scatter_plot <- scatter_plot %>% layout(scene = list(xaxis = list(title = 'Math Score'),
+                                                     yaxis = list(title = 'Attendance (%)'),
+                                                     zaxis = list(title = 'Science Score'),
+                                                     title = '3D Scatter: Science Score vs Math Score and Attendance'))
+math_score_range <- seq(min(math_score), max(math_score), length.out = 50)
+attendance_range <- seq(min(attendance), max(attendance), length.out = 50)
+math_score_mesh <- as.vector(outer(math_score_range, rep(1, length(attendance_range))))
+attendance_mesh <- as.vector(outer(rep(1, length(math_score_range)), attendance_range))
+science_score_mesh <- 0.8 * math_score_mesh + 0.1 * attendance_mesh
+surface_plot <- plot_ly(x = math_score_range, y = attendance_range, z = matrix(science_score_mesh, nrow = 50, ncol = 50), 
+                        type = 'surface')
+surface_plot <- surface_plot %>% layout(scene = list(xaxis = list(title = 'Math Score'),
+                                                     yaxis = list(title = 'Attendance (%)'),
+                                                     zaxis = list(title = 'Science Score'),
+                                                     title = '3D Surface: Science Score with Math Score and Attendance'))
+scatter_plot
+surface_plot

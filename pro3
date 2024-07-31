@@ -1,0 +1,10 @@
+library(ggplot2)
+Product = c("A", "B", "C", "D", "E")
+Sales = c(300, 450, 500, 350, 400)
+product_sales_data=data.frame(Product,Sales)
+print(product_sales_data)
+ggplot(product_sales_data,aes(x=Product,y=Sales))+
+  geom_bar(stat ="identity",fill="purple")+
+  labs(title="Product vs Sales",x="Product",y="sales")
+
+
